@@ -5,8 +5,8 @@
     - initialize lottery with a minimum ticket prize
 
 - Buy ticket
-    - Users can by tickets by sending Aptos coins to the lottery contract
-    - Add user's address to the participants list and increase the total prize
+    - users can by tickets by sending Aptos coins to the lottery contract
+    - add user's address to the participants list and increase the total prize
 
 - Draw winner
     - ensure lottery has at least three participants
