@@ -6,6 +6,7 @@ module lottery_address::lottery {
     use aptos_framework::randomness;
     use aptos_framework::timestamp;
     use aptos_framework::account;
+    use aptos_std::table::{Self, Table};
 
     // Error codes
     const ENO_LOTTERY: u64 = 1;
@@ -14,9 +15,12 @@ module lottery_address::lottery {
     const ELOTTERY_NOT_DRAWN: u64 = 4;
     const EINSUFFICIENT_BALANCE: u64 = 5;
     const ENO_PARTICIPANTS: u64 = 6;
+    const ENO_NOT_MODULE_OWNER: u64 = 7;
+
+    const MODULE_OWNER: address = @lottery_address;
 
     // Struct to store the lottery details
-    struct Lottery has key {
+    struct Lottery has store, key {
         participants: vector<address>,
         winner: address,
         prize: Coin<AptosCoin>,
@@ -30,27 +34,45 @@ module lottery_address::lottery {
         signer_cap: account::SignerCapability
     }
 
-    // Initialize the lottery
-    public entry fun initialize(admin: &signer, ticket_price: u64, duration: u64) {
-        let admin_addr = signer::address_of(admin);
-        assert!(!exists<Lottery>(admin_addr), ELOTTERY_ALREADY_EXISTS);
+    struct GlobalTable has key {
+        lottery_counter:u64,
+        lottery_table: Table<u64, Lottery>,
+    }
 
-        let (_resource, signer_cap) = account::create_resource_account(admin, vector::empty());
+    // Initialize the lottery
+    public entry fun initialize(deployer: &signer, ticket_price: u64, duration: u64) {
+        // let admin_addr = signer::address_of(admin);
+        // assert!(!exists<Lottery>(admin_addr), ELOTTERY_ALREADY_EXISTS);
+
+        // let current_time = timestamp::now_seconds();
+        // let lottery = Lottery {
+        //     participants: vector::empty(),
+        //     winner: @0x0,
+        //     prize: coin::zero<AptosCoin>(),
+        //     ticket_price,
+        //     is_drawn: false,
+        //     start_time: current_time,
+        //     end_time: current_time + duration,
+        // };
+        // move_to(admin, lottery);
+
+        assert!(signer::address_of(deployer) == MODULE_OWNER, ENO_NOT_MODULE_OWNER);
+
+        // Initialize a resource account that maintains the list of lotteries
+        let (_resource, signer_cap) = account::create_resource_account(deployer, vector::empty());
+
         let rsrc_acc_signer = account::create_signer_with_capability(&signer_cap);
+
         coin::register<AptosCoin>(&rsrc_acc_signer);
 
-        let current_time = timestamp::now_seconds();
-        let lottery = Lottery {
-            participants: vector::empty(),
-            winner: @0x0,
-            prize: coin::zero<AptosCoin>(),
-            ticket_price,
-            is_drawn: false,
-            start_time: current_time,
-            end_time: current_time + duration,
-        };
-        move_to(admin, lottery);
-        move_to(admin, SignerCapabilityStore{
+        // Initialize the global table
+        move_to(deployer, GlobalTable {
+            // store details of lottery into a table
+            lottery_counter: 0,
+            lottery_table: table::new(),
+        });
+
+        move_to(deployer, SignerCapabilityStore{
             signer_cap
         });
     }
