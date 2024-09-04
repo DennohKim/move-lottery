@@ -18,6 +18,7 @@ module lottery_address::lottery {
     const ENO_NOT_MODULE_OWNER: u64 = 7;
 
     const MODULE_OWNER: address = @lottery_address;
+    const LOTTERY_PRICE: u64 = 1000;
 
     // Struct to store the lottery details
     struct Lottery has store, key {
@@ -40,7 +41,7 @@ module lottery_address::lottery {
     }
 
     // Initialize the lottery
-    public entry fun initialize(deployer: &signer, ticket_price: u64, duration: u64) {
+    public entry fun initialize(deployer: &signer, duration: u64) {
         // let admin_addr = signer::address_of(admin);
         // assert!(!exists<Lottery>(admin_addr), ELOTTERY_ALREADY_EXISTS);
 
@@ -78,16 +79,32 @@ module lottery_address::lottery {
     }
 
     // Buy a lottery ticket
-    public entry fun buy_ticket(buyer: &signer, admin_addr: address) acquires Lottery {
-        let lottery = borrow_global_mut<Lottery>(admin_addr);
-        assert!(!lottery.is_drawn, ELOTTERY_ALREADY_DRAWN);
-        assert!(timestamp::now_seconds() < lottery.end_time, ELOTTERY_ALREADY_DRAWN);
+    public entry fun buy_ticket(buyer: &signer, noOfTickets: u64) acquires GlobalTable, SignerCapabilityStore {
+        // let lottery = borrow_global_mut<Lottery>(admin_addr);
+        // assert!(!lottery.is_drawn, ELOTTERY_ALREADY_DRAWN);
+        // assert!(timestamp::now_seconds() < lottery.end_time, ELOTTERY_ALREADY_DRAWN);
 
-        let payment = coin::withdraw<AptosCoin>(buyer, lottery.ticket_price);
-        coin::merge(&mut lottery.prize, payment);
+        // let payment = coin::withdraw<AptosCoin>(buyer, lottery.ticket_price);
+        // coin::merge(&mut lottery.prize, payment);
 
-        let buyer_addr = signer::address_of(buyer);
-        vector::push_back(&mut lottery.participants, buyer_addr);
+        // let buyer_addr = signer::address_of(buyer);
+        // vector::push_back(&mut lottery.participants, buyer_addr);
+
+        let global_table_resource = borrow_global_mut<GlobalTable>(MODULE_OWNER);
+        let counter = global_table_resource.lottery_counter + 1;
+
+        // Take payment from the buyer
+        let signer_cap_resource = borrow_global_mut<SignerCapabilityStore>(MODULE_OWNER);
+        let rsrc_acc_signer = account::create_signer_with_capability(&signer_cap_resource.signer_cap);
+        let rsrc_acc_address = signer::address_of(&rsrc_acc_signer);
+        coin::transfer<AptosCoin>(buyer, rsrc_acc_address, LOTTERY_PRICE);
+
+        // let new_lottery = Lottery {
+        //     lottery_id: counter,
+        //     participants: vector::empty(),
+        //     winner: @0x0,
+        //     prize: ,
+        // }
     }
 
     // Draw the lottery winner
