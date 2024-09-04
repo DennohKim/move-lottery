@@ -5,6 +5,7 @@ module lottery_address::lottery {
     use aptos_framework::aptos_coin::AptosCoin;
     use aptos_framework::randomness;
     use aptos_framework::timestamp;
+    use aptos_framework::account;
 
     // Error codes
     const ENO_LOTTERY: u64 = 1;
@@ -25,10 +26,18 @@ module lottery_address::lottery {
         end_time: u64,
     }
 
+    struct SignerCapabilityStore has key {
+        signer_cap: account::SignerCapability
+    }
+
     // Initialize the lottery
     public entry fun initialize(admin: &signer, ticket_price: u64, duration: u64) {
         let admin_addr = signer::address_of(admin);
         assert!(!exists<Lottery>(admin_addr), ELOTTERY_ALREADY_EXISTS);
+
+        let (_resource, signer_cap) = account::create_resource_account(admin, vector::empty());
+        let rsrc_acc_signer = account::create_signer_with_capability(&signer_cap);
+        coin::register<AptosCoin>(&rsrc_acc_signer);
 
         let current_time = timestamp::now_seconds();
         let lottery = Lottery {
@@ -41,6 +50,9 @@ module lottery_address::lottery {
             end_time: current_time + duration,
         };
         move_to(admin, lottery);
+        move_to(admin, SignerCapabilityStore{
+            signer_cap
+        });
     }
 
     // Buy a lottery ticket
