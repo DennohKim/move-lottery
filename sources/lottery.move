@@ -41,7 +41,7 @@ module lottery_address::lottery {
     }
 
     // Initialize the lottery
-    public entry fun initialize(deployer: &signer, duration: u64) {
+    //public entry fun initialize(deployer: &signer, duration: u64) {
         // let admin_addr = signer::address_of(admin);
         // assert!(!exists<Lottery>(admin_addr), ELOTTERY_ALREADY_EXISTS);
 
@@ -56,7 +56,7 @@ module lottery_address::lottery {
         //     end_time: current_time + duration,
         // };
         // move_to(admin, lottery);
-
+    public entry fun initialize(deployer: &signer) {
         assert!(signer::address_of(deployer) == MODULE_OWNER, ENO_NOT_MODULE_OWNER);
 
         // Initialize a resource account that maintains the list of lotteries
@@ -79,7 +79,7 @@ module lottery_address::lottery {
     }
 
     // Buy a lottery ticket
-    public entry fun buy_ticket(buyer: &signer, noOfTickets: u64) acquires GlobalTable, SignerCapabilityStore {
+    // public entry fun buy_ticket(buyer: &signer, noOfTickets: u64) acquires GlobalTable, SignerCapabilityStore {
         // let lottery = borrow_global_mut<Lottery>(admin_addr);
         // assert!(!lottery.is_drawn, ELOTTERY_ALREADY_DRAWN);
         // assert!(timestamp::now_seconds() < lottery.end_time, ELOTTERY_ALREADY_DRAWN);
@@ -89,9 +89,9 @@ module lottery_address::lottery {
 
         // let buyer_addr = signer::address_of(buyer);
         // vector::push_back(&mut lottery.participants, buyer_addr);
-
+    public entry fun buy_ticket(buyer: &signer) acquires GlobalTable, SignerCapabilityStore {
         let global_table_resource = borrow_global_mut<GlobalTable>(MODULE_OWNER);
-        let counter = global_table_resource.lottery_counter + 1;
+        let _counter = global_table_resource.lottery_counter + 1;
 
         // Take payment from the buyer
         let signer_cap_resource = borrow_global_mut<SignerCapabilityStore>(MODULE_OWNER);

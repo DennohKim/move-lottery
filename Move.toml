@@ -4,7 +4,7 @@ version = "1.0.0"
 authors = []
 
 [addresses]
-lottery_address = 'e83c5e0f9bacb4b82624048f31f4d18b35a341c72b180471ad1bb38fcbdeb0a7'
+lottery_address = '5d47b86538d3155efb1a95ed6519e3d4c4bcc403bc1c9d8d5629668fc03fad36'
 
 
 [dev-addresses]
