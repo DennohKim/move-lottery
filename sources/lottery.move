@@ -124,17 +124,20 @@ module lottery_address::lottery {
         let rsrc_acc_address = signer::address_of(&rsrc_acc_signer);
 
         // Todo: Check buyer balance to ensure they can afford the ticket
-        let buyer_balance = coin::balance<AptosCoin>(signer::address_of(buyer));
+        let buyer_address = signer::address_of(buyer);
+        let buyer_balance = coin::balance<AptosCoin>(buyer_address);
         assert!(buyer_balance >= LOTTERY_PRICE, EINSUFFICIENT_BALANCE);
         
         // Transfer the coins from the buyer to the resource account
-        let coins = coin::withdraw<AptosCoin>(buyer, LOTTERY_PRICE);
-        aptos_account::deposit_coins(rsrc_acc_address, coins);
-        // coin::transfer<AptosCoin>(buyer, rsrc_acc_address, LOTTERY_PRICE);
+        // let coins = coin::withdraw<AptosCoin>(buyer, LOTTERY_PRICE);
+        // aptos_account::deposit_coins(rsrc_acc_address, coins);
+        coin::transfer<AptosCoin>(buyer, rsrc_acc_address, LOTTERY_PRICE);
         
+         // Update the lottery prize
+        lottery.prize = lottery.prize + LOTTERY_PRICE;
         // Add the buyer to the list of participants
-        let participant_address = signer::address_of(buyer);
-        vector::push_back(&mut lottery.participants, participant_address);
+        // let participant_address = signer::address_of(buyer);
+        vector::push_back(&mut lottery.participants, buyer_address);
 
 
         // let new_lottery = Lottery {
