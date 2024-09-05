@@ -7,7 +7,7 @@ module lottery_address::lottery {
     use aptos_framework::timestamp;
     use aptos_framework::account;
     use aptos_std::table::{Self, Table};
-    use aptos_framework::aptos_account;
+    // use aptos_framework::aptos_account;
 
     // Error codes
     const ENO_LOTTERY: u64 = 1;
@@ -17,9 +17,10 @@ module lottery_address::lottery {
     const EINSUFFICIENT_BALANCE: u64 = 5;
     const ENO_PARTICIPANTS: u64 = 6;
     const ENO_NOT_MODULE_OWNER: u64 = 7;
+    const ELOTTERY_DIDNT_END: u64 = 8;
 
     const MODULE_OWNER: address = @lottery_address;
-    const LOTTERY_PRICE: u64 = 1000;
+    const LOTTERY_PRICE: u64 = 10000000;
 
     // Struct to store the lottery details
     struct Lottery has store, key, drop {
@@ -123,7 +124,7 @@ module lottery_address::lottery {
         let rsrc_acc_signer = account::create_signer_with_capability(&signer_cap_resource.signer_cap);
         let rsrc_acc_address = signer::address_of(&rsrc_acc_signer);
 
-        // Todo: Check buyer balance to ensure they can afford the ticket
+        // Check buyer balance to ensure they can afford the ticket
         let buyer_address = signer::address_of(buyer);
         let buyer_balance = coin::balance<AptosCoin>(buyer_address);
         assert!(buyer_balance >= LOTTERY_PRICE, EINSUFFICIENT_BALANCE);
@@ -138,31 +139,40 @@ module lottery_address::lottery {
         // Add the buyer to the list of participants
         // let participant_address = signer::address_of(buyer);
         vector::push_back(&mut lottery.participants, buyer_address);
-
-
-        // let new_lottery = Lottery {
-        //     lottery_id: counter,
-        //     participants: vector::empty(),
-        //     winner: @0x0,
-        //     prize: ,
-        // }
     }
 
     // Draw the lottery winner
-    // #[randomness]
-    // public(friend) entry fun draw_winner(admin: &signer) acquires Lottery {
+    #[randomness]
+    public(friend) entry fun draw_winner(admin: &signer, lotteryId: u64) acquires GlobalTable, SignerCapabilityStore {
+        assert!(signer::address_of(admin) == MODULE_OWNER, ENO_NOT_MODULE_OWNER);
+        let global_table_resource = borrow_global_mut<GlobalTable>(MODULE_OWNER);
+        let lottery = table::borrow_mut(&mut global_table_resource.lotteryTable, lotteryId);
+
     //     let admin_addr = signer::address_of(admin);
     //     let lottery = borrow_global_mut<Lottery>(admin_addr);
         
-    //     assert!(!lottery.is_drawn, ELOTTERY_ALREADY_DRAWN);
-    //     assert!(timestamp::now_seconds() >= lottery.end_time, ELOTTERY_NOT_DRAWN);
-    //     assert!(!vector::is_empty(&lottery.participants), ENO_PARTICIPANTS);
+        assert!(!lottery.is_drawn, ELOTTERY_ALREADY_DRAWN);
+        assert!(timestamp::now_seconds() >= lottery.end_time, ELOTTERY_DIDNT_END);
+        assert!(!vector::is_empty(&lottery.participants), ENO_PARTICIPANTS);
 
-    //     let participants_count = vector::length(&lottery.participants);
-    //     let winner_index = randomness::u64_range(0, participants_count);
-    //     lottery.winner = *vector::borrow(&lottery.participants, winner_index);
-    //     lottery.is_drawn = true;
-    // }
+        let participants_count = vector::length(&lottery.participants);
+        let winner_index = randomness::u64_range(0, participants_count);
+        lottery.winner = *vector::borrow(&lottery.participants, winner_index);
+
+        let signer_cap_resource = borrow_global_mut<SignerCapabilityStore>(MODULE_OWNER);
+        let (rsrc_acc_signer,  _rsrc_acc_address) = get_rsrc_acc(signer_cap_resource);
+
+        coin::transfer<AptosCoin>(&rsrc_acc_signer, lottery.winner, participants_count * LOTTERY_PRICE);
+        lottery.is_drawn = true;
+    }
+
+
+    fun get_rsrc_acc(signer_cap_resource: &SignerCapabilityStore): (signer, address) {
+        let rsrc_acc_signer = account::create_signer_with_capability(&signer_cap_resource.signer_cap);
+        let rsrc_acc_addr = signer::address_of(&rsrc_acc_signer);
+
+        (rsrc_acc_signer, rsrc_acc_addr)
+    }
 
     // // Claim the prize (can only be called by the winner)
     // public entry fun claim_prize(winner: &signer, admin_addr: address) acquires Lottery {
