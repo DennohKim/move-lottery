@@ -1,10 +1,10 @@
 [package]
 name = "lottery"
-version = "1.0.0"
+version = "1.0.3"
 authors = []
 
 [addresses]
-lottery_address = '5d47b86538d3155efb1a95ed6519e3d4c4bcc403bc1c9d8d5629668fc03fad36'
+lottery_address = 'b5a8b199938936bb735c089e81dc310a5383ce03035e051f7cfdc98680c50f27'
 
 
 [dev-addresses]

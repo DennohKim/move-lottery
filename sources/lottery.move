@@ -1,12 +1,13 @@
 module lottery_address::lottery {
     use std::vector;
     use std::signer;
-    use aptos_framework::coin::{Self, Coin};
+    use aptos_framework::coin;
     use aptos_framework::aptos_coin::AptosCoin;
     use aptos_framework::randomness;
     use aptos_framework::timestamp;
     use aptos_framework::account;
     use aptos_std::table::{Self, Table};
+    use aptos_framework::aptos_account;
 
     // Error codes
     const ENO_LOTTERY: u64 = 1;
@@ -21,11 +22,10 @@ module lottery_address::lottery {
     const LOTTERY_PRICE: u64 = 1000;
 
     // Struct to store the lottery details
-    struct Lottery has store, key {
+    struct Lottery has store, key, drop {
         participants: vector<address>,
         winner: address,
-        prize: Coin<AptosCoin>,
-        ticket_price: u64,
+        prize: u64,
         is_drawn: bool,
         start_time: u64,
         end_time: u64,
@@ -36,8 +36,8 @@ module lottery_address::lottery {
     }
 
     struct GlobalTable has key {
-        lottery_counter:u64,
-        lottery_table: Table<u64, Lottery>,
+        lotteryCounter:u64,
+        lotteryTable: Table<u64, Lottery>,
     }
 
     // Initialize the lottery
@@ -56,6 +56,7 @@ module lottery_address::lottery {
         //     end_time: current_time + duration,
         // };
         // move_to(admin, lottery);
+
     public entry fun initialize(deployer: &signer) {
         assert!(signer::address_of(deployer) == MODULE_OWNER, ENO_NOT_MODULE_OWNER);
 
@@ -69,12 +70,12 @@ module lottery_address::lottery {
         // Initialize the global table
         move_to(deployer, GlobalTable {
             // store details of lottery into a table
-            lottery_counter: 0,
-            lottery_table: table::new(),
+            lotteryCounter: 0,
+            lotteryTable: table::new(),
         });
 
         move_to(deployer, SignerCapabilityStore{
-            signer_cap
+            signer_cap,
         });
     }
 
@@ -89,15 +90,52 @@ module lottery_address::lottery {
 
         // let buyer_addr = signer::address_of(buyer);
         // vector::push_back(&mut lottery.participants, buyer_addr);
-    public entry fun buy_ticket(buyer: &signer) acquires GlobalTable, SignerCapabilityStore {
+
+    public entry fun createLottery(admin: &signer, duration: u64) acquires GlobalTable {
+        // let admin_addr = signer::address_of(admin);
+        assert!(signer::address_of(admin) == MODULE_OWNER, ENO_NOT_MODULE_OWNER);
         let global_table_resource = borrow_global_mut<GlobalTable>(MODULE_OWNER);
-        let _counter = global_table_resource.lottery_counter + 1;
+        let counter = global_table_resource.lotteryCounter + 1;
+
+        let currentTime = timestamp::now_seconds();
+        let newLottery = Lottery {
+            participants: vector::empty<address>(),
+            winner: @0x0,
+            prize: 0,
+            is_drawn: false,
+            start_time: currentTime,
+            end_time: currentTime + duration,
+        }; 
+
+        table::upsert(&mut global_table_resource.lotteryTable, counter, newLottery);
+        global_table_resource.lotteryCounter = counter;
+    }
+
+
+    public entry fun buyTicket(buyer: &signer, lotteryId: u64) acquires GlobalTable, SignerCapabilityStore {
+        let global_table_resource = borrow_global_mut<GlobalTable>(MODULE_OWNER);
+        // let lottery = table::borrow_mut(&mut global_table_resource.lotteryTable, lotteryId);
+        // Borrow the lottery from the table
+        let lottery = table::borrow_mut(&mut global_table_resource.lotteryTable, lotteryId);
 
         // Take payment from the buyer
         let signer_cap_resource = borrow_global_mut<SignerCapabilityStore>(MODULE_OWNER);
         let rsrc_acc_signer = account::create_signer_with_capability(&signer_cap_resource.signer_cap);
         let rsrc_acc_address = signer::address_of(&rsrc_acc_signer);
-        coin::transfer<AptosCoin>(buyer, rsrc_acc_address, LOTTERY_PRICE);
+
+        // Todo: Check buyer balance to ensure they can afford the ticket
+        let buyer_balance = coin::balance<AptosCoin>(signer::address_of(buyer));
+        assert!(buyer_balance >= LOTTERY_PRICE, EINSUFFICIENT_BALANCE);
+        
+        // Transfer the coins from the buyer to the resource account
+        let coins = coin::withdraw<AptosCoin>(buyer, LOTTERY_PRICE);
+        aptos_account::deposit_coins(rsrc_acc_address, coins);
+        // coin::transfer<AptosCoin>(buyer, rsrc_acc_address, LOTTERY_PRICE);
+        
+        // Add the buyer to the list of participants
+        let participant_address = signer::address_of(buyer);
+        vector::push_back(&mut lottery.participants, participant_address);
+
 
         // let new_lottery = Lottery {
         //     lottery_id: counter,
@@ -108,56 +146,56 @@ module lottery_address::lottery {
     }
 
     // Draw the lottery winner
-    #[randomness]
-    public(friend) entry fun draw_winner(admin: &signer) acquires Lottery {
-        let admin_addr = signer::address_of(admin);
-        let lottery = borrow_global_mut<Lottery>(admin_addr);
+    // #[randomness]
+    // public(friend) entry fun draw_winner(admin: &signer) acquires Lottery {
+    //     let admin_addr = signer::address_of(admin);
+    //     let lottery = borrow_global_mut<Lottery>(admin_addr);
         
-        assert!(!lottery.is_drawn, ELOTTERY_ALREADY_DRAWN);
-        assert!(timestamp::now_seconds() >= lottery.end_time, ELOTTERY_NOT_DRAWN);
-        assert!(!vector::is_empty(&lottery.participants), ENO_PARTICIPANTS);
+    //     assert!(!lottery.is_drawn, ELOTTERY_ALREADY_DRAWN);
+    //     assert!(timestamp::now_seconds() >= lottery.end_time, ELOTTERY_NOT_DRAWN);
+    //     assert!(!vector::is_empty(&lottery.participants), ENO_PARTICIPANTS);
 
-        let participants_count = vector::length(&lottery.participants);
-        let winner_index = randomness::u64_range(0, participants_count);
-        lottery.winner = *vector::borrow(&lottery.participants, winner_index);
-        lottery.is_drawn = true;
-    }
+    //     let participants_count = vector::length(&lottery.participants);
+    //     let winner_index = randomness::u64_range(0, participants_count);
+    //     lottery.winner = *vector::borrow(&lottery.participants, winner_index);
+    //     lottery.is_drawn = true;
+    // }
 
-    // Claim the prize (can only be called by the winner)
-    public entry fun claim_prize(winner: &signer, admin_addr: address) acquires Lottery {
-        let lottery = borrow_global_mut<Lottery>(admin_addr);
-        assert!(lottery.is_drawn, ELOTTERY_NOT_DRAWN);
-        assert!(signer::address_of(winner) == lottery.winner, ENO_LOTTERY);
+    // // Claim the prize (can only be called by the winner)
+    // public entry fun claim_prize(winner: &signer, admin_addr: address) acquires Lottery {
+    //     let lottery = borrow_global_mut<Lottery>(admin_addr);
+    //     assert!(lottery.is_drawn, ELOTTERY_NOT_DRAWN);
+    //     assert!(signer::address_of(winner) == lottery.winner, ENO_LOTTERY);
 
-        let prize = coin::extract_all(&mut lottery.prize);
-        coin::deposit(signer::address_of(winner), prize);
-    }
+    //     let prize = coin::extract_all(&mut lottery.prize);
+    //     coin::deposit(signer::address_of(winner), prize);
+    // }
 
-    // View functions
-    #[view]
-    public fun get_ticket_price(admin_addr: address): u64 acquires Lottery {
-        borrow_global<Lottery>(admin_addr).ticket_price
-    }
+    // // View functions
+    // #[view]
+    // public fun get_ticket_price(admin_addr: address): u64 acquires Lottery {
+    //     borrow_global<Lottery>(admin_addr).ticket_price
+    // }
 
-    #[view]
-    public fun get_prize_amount(admin_addr: address): u64 acquires Lottery {
-        coin::value(&borrow_global<Lottery>(admin_addr).prize)
-    }
+    // #[view]
+    // public fun get_prize_amount(admin_addr: address): u64 acquires Lottery {
+    //     coin::value(&borrow_global<Lottery>(admin_addr).prize)
+    // }
 
-    #[view]
-    public fun get_participants_count(admin_addr: address): u64 acquires Lottery {
-        vector::length(&borrow_global<Lottery>(admin_addr).participants)
-    }
+    // #[view]
+    // public fun get_participants_count(admin_addr: address): u64 acquires Lottery {
+    //     vector::length(&borrow_global<Lottery>(admin_addr).participants)
+    // }
 
-    #[view]
-    public fun is_lottery_drawn(admin_addr: address): bool acquires Lottery {
-        borrow_global<Lottery>(admin_addr).is_drawn
-    }
+    // #[view]
+    // public fun is_lottery_drawn(admin_addr: address): bool acquires Lottery {
+    //     borrow_global<Lottery>(admin_addr).is_drawn
+    // }
 
-    #[view]
-    public fun get_winner(admin_addr: address): address acquires Lottery {
-        let lottery = borrow_global<Lottery>(admin_addr);
-        assert!(lottery.is_drawn, ELOTTERY_NOT_DRAWN);
-        lottery.winner
-    }
+    // #[view]
+    // public fun get_winner(admin_addr: address): address acquires Lottery {
+    //     let lottery = borrow_global<Lottery>(admin_addr);
+    //     assert!(lottery.is_drawn, ELOTTERY_NOT_DRAWN);
+    //     lottery.winner
+    // }
 }
