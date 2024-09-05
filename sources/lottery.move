@@ -232,7 +232,7 @@ module lottery_address::lottery {
     }
 
     #[view]
-    public fun get_lottery_ids(): u64 acquires GlobalTable {
+    public fun get_last_lottery_id(): u64 acquires GlobalTable {
         let global_table_resource = borrow_global<GlobalTable>(MODULE_OWNER);
         global_table_resource.lotteryCounter
     }
