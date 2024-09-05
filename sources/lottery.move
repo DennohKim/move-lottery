@@ -7,7 +7,6 @@ module lottery_address::lottery {
     use aptos_framework::timestamp;
     use aptos_framework::account;
     use aptos_std::table::{Self, Table};
-    // use aptos_framework::aptos_account;
 
     // Error codes
     const ENO_LOTTERY: u64 = 1;
@@ -118,6 +117,7 @@ module lottery_address::lottery {
         // let lottery = table::borrow_mut(&mut global_table_resource.lotteryTable, lotteryId);
         // Borrow the lottery from the table
         let lottery = table::borrow_mut(&mut global_table_resource.lotteryTable, lotteryId);
+        assert!(!lottery.is_drawn, ELOTTERY_ALREADY_DRAWN);
 
         // Take payment from the buyer
         let signer_cap_resource = borrow_global_mut<SignerCapabilityStore>(MODULE_OWNER);
@@ -184,31 +184,56 @@ module lottery_address::lottery {
     //     coin::deposit(signer::address_of(winner), prize);
     // }
 
-    // // View functions
-    // #[view]
-    // public fun get_ticket_price(admin_addr: address): u64 acquires Lottery {
-    //     borrow_global<Lottery>(admin_addr).ticket_price
-    // }
+    // View functions
+    #[view]
+    public fun get_ticket_price(): u64 {
+        LOTTERY_PRICE
+    }
 
-    // #[view]
-    // public fun get_prize_amount(admin_addr: address): u64 acquires Lottery {
-    //     coin::value(&borrow_global<Lottery>(admin_addr).prize)
-    // }
+    #[view]
+    public fun get_prize_amount(lotteryId: u64): u64 acquires GlobalTable {
+        // Access the global table resource
+        let global_table_resource = borrow_global<GlobalTable>(MODULE_OWNER);
 
-    // #[view]
-    // public fun get_participants_count(admin_addr: address): u64 acquires Lottery {
-    //     vector::length(&borrow_global<Lottery>(admin_addr).participants)
-    // }
+        // vector::length(&table::borrow(&borrow_global<GlobalTable>(MODULE_OWNER).lotteryTable, lotteryId).participants) * LOTTERY_PRICE
 
-    // #[view]
-    // public fun is_lottery_drawn(admin_addr: address): bool acquires Lottery {
-    //     borrow_global<Lottery>(admin_addr).is_drawn
-    // }
+        // Borrow the lottery entry from the table
+        let lottery = table::borrow(&global_table_resource.lotteryTable, lotteryId);
 
-    // #[view]
-    // public fun get_winner(admin_addr: address): address acquires Lottery {
-    //     let lottery = borrow_global<Lottery>(admin_addr);
-    //     assert!(lottery.is_drawn, ELOTTERY_NOT_DRAWN);
-    //     lottery.winner
-    // }
+        // Return the prize amount stored in the lottery struct
+        lottery.prize
+    }
+
+    #[view]
+    public fun get_participants_count(lotteryId: u64): u64 acquires GlobalTable {
+        let global_table_resource = borrow_global<GlobalTable>(MODULE_OWNER);
+        let lottery = table::borrow(&global_table_resource.lotteryTable, lotteryId);
+        vector::length(&lottery.participants)
+        // vector::length(&borrow_global<Lottery>(admin_addr).participants)
+    }
+
+    #[view]
+    public fun is_lottery_drawn(lotteryId: u64): bool acquires GlobalTable {
+        let global_table_resource = borrow_global<GlobalTable>(MODULE_OWNER);
+        let lottery = table::borrow(&global_table_resource.lotteryTable, lotteryId);
+        lottery.is_drawn
+        // borrow_global<Lottery>(admin_addr).is_drawn
+    }
+
+    #[view]
+    public fun get_winner(lotteryId: u64): address acquires GlobalTable {
+        let global_table_resource = borrow_global<GlobalTable>(MODULE_OWNER);
+        let lottery = table::borrow(&global_table_resource.lotteryTable, lotteryId);
+        assert!(lottery.is_drawn, ELOTTERY_NOT_DRAWN);
+        lottery.winner
+        // let lottery = borrow_global<Lottery>(admin_addr);
+        // assert!(lottery.is_drawn, ELOTTERY_NOT_DRAWN);
+        // lottery.winner
+    }
+
+    #[view]
+    public fun get_lottery_ids(): u64 acquires GlobalTable {
+        let global_table_resource = borrow_global<GlobalTable>(MODULE_OWNER);
+        global_table_resource.lotteryCounter
+    }
 }
