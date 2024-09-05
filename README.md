@@ -1,14 +1,12 @@
 # Aptos Lottery
 
-As part of Encode's Aptos bootcamp, the team (Ashish and Akshar) worked on the project: Aptos Lottery. This project implements a decentralized lottery system on the Aptos blockchain using the Move programming language. The smart contract allows users to participate in a lottery by buying tickets with AptosCoin, and uses on-chain randomness to select a winner.
+As part of Encode's Aptos bootcamp, the team (Aashish and Akshar) worked on the project: Aptos Lottery. This project implements a decentralized lottery system on the Aptos blockchain using the Move programming language. The smart contract allows users to participate in a lottery by buying tickets with AptosCoin, and uses on-chain randomness to select a winner.
 
 ## Key Features
 
-1. **Lottery Initialization**: Admin can create a new lottery with a specified ticket price and duration.
-2. **Ticket Purchase**: Users can buy lottery tickets using AptosCoin.
-3. **Random Winner Selection**: Utilizes Aptos' on-chain randomness module for fair winner selection.
-4. **Prize Claiming**: The winner can claim the accumulated prize.
-5. **View Functions**: Provides functions to check lottery status, prize amount, and participant count.
+1. **Ticket Purchase**: Users can buy lottery tickets using AptosCoin.
+2. **Random Winner Selection and Payout**: Utilizes Aptos' on-chain randomness module for fair winner selection and pays out the prize to the winner in same transaction.
+3. **View Functions**: Provides functions to check lottery status, prize amount, and participant count.
 
 ## Learnings Applied
 
