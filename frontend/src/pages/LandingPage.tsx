@@ -1,3 +1,5 @@
+import { Link } from "react-router-dom";
+
 export default function LandingPage() {
   return (
     <main className="flex min-h-screen flex-col items-center justify-center p-24 relative overflow-hidden">
@@ -17,12 +19,13 @@ export default function LandingPage() {
           the thrill of transparent, fair, and secure draws. Get started today,
           and you could be our next big winner!
         </p>
-        <button
+        <Link
+          to={`/play`}
           className="w-fit mt-5 px-7 py-2 text-lg text-neutral-800 font-primary font-medium bg-[#e5ffad]/90 hover:bg-[#e5ffad] rounded-3xl"
-          onClick={() => {}}
+          
         >
           Start playing
-        </button>
+        </Link>
       </div>
     </main>
   );

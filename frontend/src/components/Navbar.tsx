@@ -56,7 +56,7 @@ const Navbar = () => {
           <ul className="font-medium font-primary flex flex-col p-4 md:p-0 mt-4 rounded-lg md:flex-row md:space-x-10 rtl:space-x-reverse md:mt-0">
             <li>
               <NavLink
-                to="/"
+                to="/home"
                 className={({ isActive }) =>
                     `block py-2 px-3 rounded-lg md:hover:bg-transparent md:border-0 md:p-0 ${
                       isActive
