@@ -18,7 +18,7 @@ export default function LandingPage() {
           and you could be our next big winner!
         </p>
         <button
-          className="w-fit mt-5 px-7 py-2 text-lg text-neutral-800 font-primary font-medium bg-[#e5ffad]/90 hover:bg-[#e5ffad] border-2 border-neutral-100 hover:border-neutral-300 rounded-3xl"
+          className="w-fit mt-5 px-7 py-2 text-lg text-neutral-800 font-primary font-medium bg-[#e5ffad]/90 hover:bg-[#e5ffad] rounded-3xl"
           onClick={() => {}}
         >
           Start playing

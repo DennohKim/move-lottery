@@ -2,12 +2,13 @@ import React from "react";
 import ReactDOM from "react-dom/client";
 import { RouterProvider, createBrowserRouter, Outlet } from "react-router-dom";
 import HomePage from "./pages/HomePage.tsx";
-import LoginPage from "./pages/LoginPage.tsx";
 import CallbackPage from "./pages/CallbackPage.tsx";
 
 import "./index.css";
 import LandingPage from "./pages/LandingPage.tsx";
 import Layout from "./layout/Layout.tsx";
+import PlayLotteryPage from "./pages/PlayLotteryPage.tsx";
+import OnrampPage from "./pages/OnrampPage.tsx";
 
 const router = createBrowserRouter([
   {
@@ -19,8 +20,8 @@ const router = createBrowserRouter([
         element: <LandingPage />,
       },
       {
-        path: "/login",
-        element: <LoginPage />,
+        path: "/play-lottery",
+        element: <PlayLotteryPage />,
       },
       {
         path: "/callback",
@@ -29,6 +30,10 @@ const router = createBrowserRouter([
       {
         path: "/home",
         element: <HomePage />,
+      },
+      {
+        path: "/onramp",
+        element: <OnrampPage />,
       },
     ],
   },
