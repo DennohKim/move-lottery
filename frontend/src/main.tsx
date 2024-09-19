@@ -1,24 +1,36 @@
 import React from "react";
 import ReactDOM from "react-dom/client";
-import { RouterProvider, createBrowserRouter } from "react-router-dom";
+import { RouterProvider, createBrowserRouter, Outlet } from "react-router-dom";
 import HomePage from "./pages/HomePage.tsx";
 import LoginPage from "./pages/LoginPage.tsx";
 import CallbackPage from "./pages/CallbackPage.tsx";
 
 import "./index.css";
+import LandingPage from "./pages/LandingPage.tsx";
+import Layout from "./layout/Layout.tsx";
 
 const router = createBrowserRouter([
   {
     path: "/",
-    element: <LoginPage />,
-  },
-  {
-    path: "/callback",
-    element: <CallbackPage />,
-  },
-  {
-    path: "/home",
-    element: <HomePage />,
+    element: <Layout><Outlet /></Layout>,
+    children: [
+      {
+        path: "/",
+        element: <LandingPage />,
+      },
+      {
+        path: "/login",
+        element: <LoginPage />,
+      },
+      {
+        path: "/callback",
+        element: <CallbackPage />,
+      },
+      {
+        path: "/home",
+        element: <HomePage />,
+      },
+    ],
   },
 ]);
 
