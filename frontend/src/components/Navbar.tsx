@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Link, NavLink } from "react-router-dom";
-import SignIn from "./SignIn";
+import { WalletSelector } from "./WalletSelector";
 
 const Navbar = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState<boolean>(false);
@@ -58,12 +58,12 @@ const Navbar = () => {
               <NavLink
                 to="/home"
                 className={({ isActive }) =>
-                    `block py-2 px-3 rounded-lg md:hover:bg-transparent md:border-0 md:p-0 ${
-                      isActive
-                        ? "text-[#e5ffad] hover:text-white"
-                        : "text-gray-300 hover:text-[#e5ffad]"
-                    } hover:bg-neutral-900/40 md:hover:bg-transparent md:hover:text-[#e5ffad]`
-                  }
+                  `block py-2 px-3 rounded-lg md:hover:bg-transparent md:border-0 md:p-0 ${
+                    isActive
+                      ? "text-[#e5ffad] hover:text-white"
+                      : "text-gray-300 hover:text-[#e5ffad]"
+                  } hover:bg-neutral-900/40 md:hover:bg-transparent md:hover:text-[#e5ffad]`
+                }
               >
                 Home
               </NavLink>
@@ -72,12 +72,12 @@ const Navbar = () => {
               <NavLink
                 to={`/play-lottery`}
                 className={({ isActive }) =>
-                    `block py-2 px-3 rounded-lg md:hover:bg-transparent md:border-0 md:p-0 ${
-                      isActive
-                        ? "text-[#e5ffad] hover:text-white"
-                        : "text-gray-300 hover:text-[#e5ffad]"
-                    } hover:bg-neutral-900/40 md:hover:bg-transparent md:hover:text-[#e5ffad]`
-                  }
+                  `block py-2 px-3 rounded-lg md:hover:bg-transparent md:border-0 md:p-0 ${
+                    isActive
+                      ? "text-[#e5ffad] hover:text-white"
+                      : "text-gray-300 hover:text-[#e5ffad]"
+                  } hover:bg-neutral-900/40 md:hover:bg-transparent md:hover:text-[#e5ffad]`
+                }
               >
                 Play
               </NavLink>
@@ -86,23 +86,23 @@ const Navbar = () => {
               <NavLink
                 to="/onramp"
                 className={({ isActive }) =>
-                    `block py-2 px-3 rounded-lg md:hover:bg-transparent md:border-0 md:p-0 ${
-                      isActive
-                        ? "text-[#e5ffad] hover:text-white"
-                        : "text-gray-300 hover:text-[#e5ffad]"
-                    } hover:bg-neutral-900/40 md:hover:bg-transparent md:hover:text-[#e5ffad]`
-                  }
+                  `block py-2 px-3 rounded-lg md:hover:bg-transparent md:border-0 md:p-0 ${
+                    isActive
+                      ? "text-[#e5ffad] hover:text-white"
+                      : "text-gray-300 hover:text-[#e5ffad]"
+                  } hover:bg-neutral-900/40 md:hover:bg-transparent md:hover:text-[#e5ffad]`
+                }
               >
                 Onramp
               </NavLink>
             </li>
           </ul>
           <span className="flex md:hidden">
-            <SignIn/>
+            <WalletSelector />
           </span>
         </div>
         <span className="hidden md:flex">
-            <SignIn/>
+          <WalletSelector />
         </span>
       </div>
     </nav>
