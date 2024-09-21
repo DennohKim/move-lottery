@@ -1,16 +1,21 @@
 import React from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import LotteryList from "@/components/LotteryList";
 
 const PlayLotteryPage = () => {
   return (
-    <div className="flex flex-col w-full px-4 font-primary">
-      <Tabs defaultValue="new-lotteries" className="w-[400px] ">
+    <div className="flex flex-col w-full px-4 font-primary pt-28">
+      <Tabs defaultValue="new-lotteries" className=" ">
         <TabsList>
           <TabsTrigger value="new-lotteries">New Lotteries</TabsTrigger>
           <TabsTrigger value="ended-lotteries">Ended Lotteries</TabsTrigger>
         </TabsList>
-        <TabsContent value="new-lotteries">New Lotteries</TabsContent>
-        <TabsContent value="ended-lotteries">Ended Lotteries</TabsContent>
+        <TabsContent value="new-lotteries">
+          <LotteryList status="new" />
+        </TabsContent>
+        <TabsContent value="ended-lotteries">
+          <LotteryList status="ended" />
+        </TabsContent>
       </Tabs>
     </div>
   );
