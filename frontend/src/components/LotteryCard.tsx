@@ -62,7 +62,7 @@ const LotteryCard = ({ lotteryId }: LotteryCardProps) => {
                   {formatApt(ticketPrice)} APT
                 </p>
               </div>
-              <div className="flex flex-col gap-2">
+              <div className="flex flex-col justify-end items-end gap-2">
                 <p>Prize Amount</p>
                 <p className="font-bold text-2xl">
                   {formatApt(prizeAmount)} APT
@@ -75,9 +75,9 @@ const LotteryCard = ({ lotteryId }: LotteryCardProps) => {
                 <p>Participants</p>
                 <p className="font-bold text-2xl">{participantsCount}</p>
               </div>
-              <div className="flex flex-col gap-2">
+              <div className="flex flex-col justify-end items-end gap-2">
                 <p>Status</p>
-                <p className="font-bold text-2xl">
+                <p className={`font-bold ${isDrawn ? 'text-red-500 bg-red-500/30 px-4 py-1 rounded-full' : 'text-green-500 bg-green-500/30 px-4 py-1 rounded-full'}`}>
                   {isDrawn ? "Drawn" : "Open"}
                 </p>
               </div>
@@ -96,7 +96,7 @@ const LotteryCard = ({ lotteryId }: LotteryCardProps) => {
               Buy Ticket
             </Button>
           ) : (
-            <p className="text-green-500 font-semibold">Lottery Ended</p>
+            <p className="text-green-500 font-semibold ">Lottery Ended</p>
           )}
         </CardFooter>
       </Card>
