@@ -3,7 +3,6 @@ import ReactDOM from "react-dom/client";
 import { RouterProvider, createBrowserRouter, Outlet } from "react-router-dom";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import HomePage from "./pages/HomePage.tsx";
-import CallbackPage from "./pages/CallbackPage.tsx";
 
 import "./index.css";
 import LandingPage from "./pages/LandingPage.tsx";
@@ -32,10 +31,6 @@ const router = createBrowserRouter([
       {
         path: "/play-lottery",
         element: <PlayLotteryPage />,
-      },
-      {
-        path: "/callback",
-        element: <CallbackPage />,
       },
       {
         path: "/home",
