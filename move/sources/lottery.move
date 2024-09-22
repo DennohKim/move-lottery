@@ -232,6 +232,20 @@ module lottery_address::lottery {
     }
 
     #[view]
+    public fun get_lottery_duration(lotteryId: u64): u64 acquires GlobalTable {
+        let global_table_resource = borrow_global<GlobalTable>(MODULE_OWNER);
+        let lottery = table::borrow(&global_table_resource.lotteryTable, lotteryId);
+        lottery.end_time - lottery.start_time
+    }
+
+    #[view]
+    public fun get_lottery_end_time(lotteryId: u64): u64 acquires GlobalTable {
+        let global_table_resource = borrow_global<GlobalTable>(MODULE_OWNER);
+        let lottery = table::borrow(&global_table_resource.lotteryTable, lotteryId);
+    lottery.end_time
+}
+
+    #[view]
     public fun get_last_lottery_id(): u64 acquires GlobalTable {
         let global_table_resource = borrow_global<GlobalTable>(MODULE_OWNER);
         global_table_resource.lotteryCounter

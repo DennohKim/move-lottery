@@ -55,7 +55,7 @@ ReactDOM.createRoot(document.getElementById("root")!).render(
       <QueryClientProvider client={queryClient}>
         <RouterProvider router={router} />
         <WrongNetworkAlert />
-        <Toaster/>
+        <Toaster />
       </QueryClientProvider>
     </WalletProvider>
   </React.StrictMode>

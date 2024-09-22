@@ -20,3 +20,12 @@ export function formatApt(amount: number | bigint): string {
 
   return `${wholePart}.${trimmedFractionalPart}`;
 }
+
+export const formatTime = (seconds: number): string => {
+  const days = Math.floor(seconds / (3600 * 24));
+  const hours = Math.floor((seconds % (3600 * 24)) / 3600);
+  const minutes = Math.floor((seconds % 3600) / 60);
+  const remainingSeconds = seconds % 60;
+
+  return `${days}d ${hours}h ${minutes}m ${remainingSeconds}s`;
+};

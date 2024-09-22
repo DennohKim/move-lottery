@@ -20,7 +20,7 @@ export default function LandingPage() {
           and you could be our next big winner!
         </p>
         <Link
-          to={`/play`}
+          to={`/play-lottery`}
           className="w-fit mt-5 px-7 py-2 text-lg text-neutral-800 font-primary font-medium bg-[#e5ffad]/90 hover:bg-[#e5ffad] rounded-3xl"
           
         >

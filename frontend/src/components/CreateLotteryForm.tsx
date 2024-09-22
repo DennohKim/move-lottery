@@ -1,3 +1,5 @@
+import { useState } from "react";
+import { useWallet } from "@aptos-labs/wallet-adapter-react";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -9,18 +11,37 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent } from "@/components/ui/card";
-import { useState } from "react";
+import { createLottery } from "@/entry-functions/CreateLottery";
+import { useToast } from "@/hooks/use-toast";
 
-export function CreateLottery() {
+export function CreateLotteryForm() {
   const [duration, setDuration] = useState("");
+  const [isOpen, setIsOpen] = useState(false);
+  const { signAndSubmitTransaction } = useWallet();
+  const { toast } = useToast(); 
 
-  // const handleSubmit = (e) => {
-  //   e.preventDefault();
-  //   onCreateLottery(parseInt(duration));
-  // };
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!duration) {
+      toast({description:"Please enter a valid duration", variant:"destructive"});
+      return;
+    }
+
+    try {
+      const durationInSeconds = parseInt(duration);
+      const payload = createLottery({ durationInSeconds });
+      await signAndSubmitTransaction(payload);
+      toast({description:"Lottery created successfully!", variant:"success"});
+      setIsOpen(false);
+      setDuration("");
+    } catch (error: any) {
+      console.error("Error creating lottery:", error);
+      toast({description:`Error creating lottery: ${error.message}`, variant:"destructive"});
+    }
+  };
 
   return (
-    <Dialog>
+    <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogTrigger asChild>
         <Button variant="primary" className="font-primary text-black">
           Create Lottery
@@ -35,7 +56,7 @@ export function CreateLottery() {
         <div className="grid gap-4 py-4 font-primary">
           <Card className="w-full max-w-md mx-auto">
             <CardContent>
-              <form onSubmit={() => {}} className="space-y-4">
+              <form onSubmit={handleSubmit} className="space-y-4">
                 <div className="space-y-2">
                   <Label htmlFor="duration">Duration (in seconds)</Label>
                   <Input
