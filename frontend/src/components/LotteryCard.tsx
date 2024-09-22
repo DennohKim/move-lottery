@@ -136,6 +136,18 @@ const LotteryCard = ({ lotteryId }: LotteryCardProps) => {
     }
   };
 
+  const getStatus = () => {
+    if (isDrawn) {
+      return { text: "Drawn", className: "text-red-500 bg-red-500/30" };
+    } else if (isEnded) {
+      return { text: "Pending Winner", className: "text-yellow-500 bg-yellow-500/30" };
+    } else {
+      return { text: "Open", className: "text-green-500 bg-green-500/30" };
+    }
+  };
+
+  const status = getStatus();
+
   return (
     <div className="flex flex-col text-white bg-[#141414] bg-opacity-70 border border-neutral-800 backdrop-filter backdrop-blur-sm rounded-xl shadow-md p-6 justify-between">
       <Card>
@@ -172,13 +184,9 @@ const LotteryCard = ({ lotteryId }: LotteryCardProps) => {
               <div className="flex flex-col justify-end items-end gap-2">
                 <p>Status</p>
                 <p
-                  className={`font-bold ${
-                    isDrawn
-                      ? "text-red-500 bg-red-500/30 px-4 py-1 rounded-full"
-                      : "text-green-500 bg-green-500/30 px-4 py-1 rounded-full"
-                  }`}
+                  className={`font-bold ${status.className} px-4 py-1 rounded-full`}
                 >
-                  {isDrawn ? "Drawn" : "Open"}
+                  {status.text}
                 </p>
               </div>
             </div>
@@ -217,7 +225,7 @@ const LotteryCard = ({ lotteryId }: LotteryCardProps) => {
               )}
             </div>
           ) : (
-            <p className="text-red-500 font-semibold">Lottery Ended</p>
+            <p className="text-red-500 bg-red-500/30 px-4 py-1 rounded-full font-semibold">Lottery Ended</p>
           )}
         </CardFooter>
       </Card>
