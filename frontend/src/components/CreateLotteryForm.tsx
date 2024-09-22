@@ -13,30 +13,50 @@ import { Label } from "@/components/ui/label";
 import { Card, CardContent } from "@/components/ui/card";
 import { createLottery } from "@/entry-functions/CreateLottery";
 import { useToast } from "@/hooks/use-toast";
+import { aptosClient } from "@/utils/aptosClient";
+import { useQueryClient } from "@tanstack/react-query";
 
 export function CreateLotteryForm() {
   const [duration, setDuration] = useState("");
   const [isOpen, setIsOpen] = useState(false);
   const { signAndSubmitTransaction } = useWallet();
-  const { toast } = useToast(); 
+  const { toast } = useToast();
+
+  const queryClient = useQueryClient();
+
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!duration) {
-      toast({description:"Please enter a valid duration", variant:"destructive"});
+      toast({
+        description: "Please enter a valid duration",
+        variant: "destructive",
+      });
       return;
     }
 
     try {
       const durationInSeconds = parseInt(duration);
-      const payload = createLottery({ durationInSeconds });
-      await signAndSubmitTransaction(payload);
-      toast({description:"Lottery created successfully!", variant:"success"});
+      const result = await signAndSubmitTransaction(
+        createLottery({ durationInSeconds })
+      );
+      // Wait for the transaction to be commited to chain
+      await aptosClient().waitForTransaction({
+        transactionHash: result.hash,
+      });
+      queryClient.refetchQueries();
+      toast({
+        description: "Lottery created successfully!",
+        variant: "success",
+      });
       setIsOpen(false);
       setDuration("");
     } catch (error: any) {
       console.error("Error creating lottery:", error);
-      toast({description:`Error creating lottery: ${error.message}`, variant:"destructive"});
+      toast({
+        description: `Error creating lottery: ${error.message}`,
+        variant: "destructive",
+      });
     }
   };
 
@@ -68,7 +88,10 @@ export function CreateLotteryForm() {
                     required
                   />
                 </div>
-                <Button type="submit" className="w-full rounded-full bg-gradient-radial from-[#282828] via-[#1a1a1a] to-[#0a0a0a]">
+                <Button
+                  type="submit"
+                  className="w-full rounded-full bg-gradient-radial from-[#282828] via-[#1a1a1a] to-[#0a0a0a]"
+                >
                   Create Lottery
                 </Button>
               </form>

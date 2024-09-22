@@ -21,6 +21,8 @@ import { ADMIN_ADDRESS } from "@/constants/constants";
 import { drawWinner } from "@/entry-functions/drawWinner";
 import { getLotteryEndTime } from "@/view-functions/getLotteryEndTime";
 import { formatDistanceToNowStrict, isPast } from "date-fns";
+import { useQueryClient } from "@tanstack/react-query";
+import { aptosClient } from "@/utils/aptosClient";
 
 interface LotteryCardProps {
   lotteryId: number;
@@ -39,6 +41,8 @@ const LotteryCard = ({ lotteryId }: LotteryCardProps) => {
 
   const { toast } = useToast();
   const { signAndSubmitTransaction, account } = useWallet();
+
+  const queryClient = useQueryClient();
 
   const isAdmin = account?.address === ADMIN_ADDRESS;
 
@@ -90,8 +94,14 @@ const LotteryCard = ({ lotteryId }: LotteryCardProps) => {
   const handleBuyTicket = async () => {
     setIsLoading(true);
     try {
-      const payload = buyLotteryTicket({ lotteryId });
-      await signAndSubmitTransaction(payload);
+      const result = await signAndSubmitTransaction(
+        buyLotteryTicket({ lotteryId })
+      );
+      // Wait for the transaction to be commited to chain
+      await aptosClient().waitForTransaction({
+        transactionHash: result.hash,
+      });
+      queryClient.refetchQueries();
       toast({
         description: "Ticket purchased successfully!",
         variant: "success",
@@ -140,7 +150,10 @@ const LotteryCard = ({ lotteryId }: LotteryCardProps) => {
     if (isDrawn) {
       return { text: "Drawn", className: "text-red-500 bg-red-500/30" };
     } else if (isEnded) {
-      return { text: "Pending Winner", className: "text-yellow-500 bg-yellow-500/30" };
+      return {
+        text: "Pending",
+        className: "text-yellow-500 bg-yellow-500/30",
+      };
     } else {
       return { text: "Open", className: "text-green-500 bg-green-500/30" };
     }
@@ -201,7 +214,7 @@ const LotteryCard = ({ lotteryId }: LotteryCardProps) => {
         </CardContent>
         <CardFooter>
           {!isDrawn ? (
-            <div className="flex flex-row justify-between items-center">
+            <div className="flex flex-col gap-2 w-full space-y-2">
               <Button
                 variant="primary"
                 onClick={handleBuyTicket}
@@ -218,14 +231,16 @@ const LotteryCard = ({ lotteryId }: LotteryCardProps) => {
                   variant="secondary"
                   onClick={handleDrawWinner}
                   disabled={isLoading || participantsCount === 0 || !isEnded}
-                  className="ml-2 rounded-full"
+                  className="flex-1 rounded-full"
                 >
                   {isLoading ? "Drawing..." : "Draw Winner"}
                 </Button>
               )}
             </div>
           ) : (
-            <p className="text-red-500 bg-red-500/30 px-4 py-1 rounded-full font-semibold">Lottery Ended</p>
+            <p className="text-red-500 bg-red-500/30 px-4 py-1 rounded-full font-semibold">
+              Lottery Ended
+            </p>
           )}
         </CardFooter>
       </Card>
