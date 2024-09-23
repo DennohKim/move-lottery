@@ -12,7 +12,7 @@ export default function RootLayout({
       <body>
         <Providers>
           <main className="h-screen bg-gradient-radial from-[#282828] via-[#1a1a1a] to-[#0a0a0a]">
-            <Navbar />
+            <Navbar/>
             <div className="px-16">{children}</div>
           </main>
         </Providers>
