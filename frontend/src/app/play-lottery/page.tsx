@@ -1,3 +1,5 @@
+"use client";
+
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import LotteryList from "@/components/LotteryList";
 import { useWallet } from "@aptos-labs/wallet-adapter-react";
@@ -8,7 +10,7 @@ const PlayLotteryPage = () => {
   const { account } = useWallet();
 
   return (
-    <div className="flex min-h-screen w-full flex-col pt-28">
+    <div className="flex min-h-screen w-full flex-col pt-28 font-primary">
       <div className="flex flex-col sm:gap-4 sm:py-4 ">
         <main className="grid flex-1 items-start gap-4 p-4 sm:px-6 sm:py-0 md:gap-8">
           <Tabs defaultValue="new-lotteries">

@@ -2,41 +2,29 @@
 @tailwind components;
 @tailwind utilities;
 
-@font-face {
-  font-family: "Trap";
-  src: url("./fonts/Trap-Bold.otf") format("opentype");
-  font-weight: 700;
-  font-style: normal;
+:root {
+  --background: #ffffff;
+  --foreground: #171717;
 }
 
-@font-face {
-  font-family: "Roobert";
-  src: url("./fonts/Roobert-Regular.otf") format("opentype");
-  font-weight: 400;
-  font-style: normal;
+@media (prefers-color-scheme: dark) {
+  :root {
+    --background: #0a0a0a;
+    --foreground: #ededed;
+  }
 }
 
-@font-face {
-  font-family: "Roobert";
-  src: url("./fonts/Roobert-Medium.otf") format("opentype");
-  font-weight: 500;
-  font-style: normal;
+body {
+  color: var(--foreground);
+  background: var(--background);
+  font-family: Arial, Helvetica, sans-serif;
 }
 
-@font-face {
-  font-family: "Roobert";
-  src: url("./fonts/Roobert-SemiBold.otf") format("opentype");
-  font-weight: 600;
-  font-style: normal;
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
 }
-
-@font-face {
-  font-family: "Roobert";
-  src: url("./fonts/Roobert-Bold.otf") format("opentype");
-  font-weight: 700;
-  font-style: normal;
-}
-
 @layer base {
   :root {
     --background: 0 0% 100%;
@@ -92,6 +80,41 @@
     --chart-5: 340 75% 55%;
   }
 }
+@font-face {
+  font-family: "Trap";
+  src: url("./fonts/Trap-Bold.otf") format("opentype");
+  font-weight: 700;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: "Roobert";
+  src: url("./fonts/Roobert-Regular.otf") format("opentype");
+  font-weight: 400;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: "Roobert";
+  src: url("./fonts/Roobert-Medium.otf") format("opentype");
+  font-weight: 500;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: "Roobert";
+  src: url("./fonts/Roobert-SemiBold.otf") format("opentype");
+  font-weight: 600;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: "Roobert";
+  src: url("./fonts/Roobert-Bold.otf") format("opentype");
+  font-weight: 700;
+  font-style: normal;
+}
+
 
 @layer base {
   * {

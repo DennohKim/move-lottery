@@ -1,3 +1,5 @@
+"use client";
+
 import React, { useState, useEffect } from 'react';
 import { getLastLotteryId } from '@/view-functions/getLastLotteryId';
 import { getIsLotteryDrawn } from '@/view-functions/getIsLotteryDrawn';

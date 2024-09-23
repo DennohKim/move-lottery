@@ -1,34 +1,36 @@
-# Aptos Keyless Example
+This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
 
-This template provides a minimal setup to get Keyless working on Vite with some ESLint rules.
+## Getting Started
 
-## Configuring Google
-
-Here are the step-by-step instructions for obtaining OAuth credentials for Google:
-
-1. Go to the [Google Cloud Console](https://console.cloud.google.com/welcome) and sign in to your account.
-2. Once you’re signed in, click on the project dropdown menu in the top navigation bar and select or create the project you want to use for your OAuth credentials.
-3. Click the search bar at the top of the page and search for **"OAuth consent screen"**.
-4. Complete the **"Configure Consent Screen"** instructions if you haven’t completed this before.
-5. On the left, click **"Credentials"**. Towards the top of the screen click the **"Create Credentials"** dropdown and select **"OAuth client ID"**.
-6. Select the **"Web application"** application type.
-7. Enter a name for your OAuth client ID, such as **"Local Development"**.
-8. In the **"Authorized JavaScript origins"** field, enter the origin of your web application: `http://localhost:5173`
-9. In the **"Authorized redirect URIs"** field, enter the URI that Google should redirect users to after they authorize your application. This should be: `http://localhost:5173/callback`.
-10. Click the **"Create"** button to create your OAuth client ID.
-11. After creating your OAuth client ID, you should see a **"Client ID"** and **"Client Secret"** on the **"Credentials"** page. Copy the **"Client ID"** and paste it into `src/core/constants.ts`
-
-That's it! You should now be able to authenticate with Google in your application.
-
-If you need more help with configuring the Google OAuth App check their docs [here](https://support.google.com/cloud/answer/6158849).
-
-## Usage
-
-Ensure you have copied your google client id above into the `src/core/constants.ts` file
+First, run the development server:
 
 ```bash
-bun i
+npm run dev
+# or
+yarn dev
+# or
+pnpm dev
+# or
 bun dev
 ```
 
-This will start a development server at `http://localhost:5173`.
+Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+
+You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+
+This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+
+## Learn More
+
+To learn more about Next.js, take a look at the following resources:
+
+- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
+- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+
+You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+
+## Deploy on Vercel
+
+The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+
+Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.

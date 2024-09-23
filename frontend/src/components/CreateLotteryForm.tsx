@@ -1,3 +1,5 @@
+"use client";
+
 import { useState } from "react";
 import { useWallet } from "@aptos-labs/wallet-adapter-react";
 import { Button } from "@/components/ui/button";
@@ -90,7 +92,7 @@ export function CreateLotteryForm() {
                 </div>
                 <Button
                   type="submit"
-                  className="w-full rounded-full bg-gradient-radial from-[#282828] via-[#1a1a1a] to-[#0a0a0a]"
+                  className="w-full rounded-full bg-[#e5ffad] text-black hover:bg-[#e5ffad]/90"
                 >
                   Create Lottery
                 </Button>
