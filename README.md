@@ -8,34 +8,84 @@ As part of Code collision Hackathon and Encode's Aptos bootcamp, the team (Denni
 2. **Random Winner Selection and Payout**: Utilizes Aptos' on-chain randomness module for fair winner selection and pays out the prize to the winner in same transaction.
 3. **View Functions**: Provides functions to check lottery status, prize amount, and participant count.
 
-## Learnings Applied
+## Technology Stack
 
-This project demonstrates several key concepts learned from the Move bootcamp:
+- Blockchain: Aptos
+- Smart Contract: Move
+- Frontend: Next.js, React, TypeScript
+- Styling: Tailwind CSS
+- State Management: React Query
+- Wallet Integration: Aptos Wallet Adapter
 
-1. **Struct and Resource Management**: Using `struct Lottery has key` to create a resource that can only exist in one place in global storage.
-2. **Access Control**: Implementing `public entry` and `public(friend)` functions to control who can call certain functions.
-3. **On-Chain Randomness**: Utilizing the `#[randomness]` attribute and `randomness::u64_range()` for secure random number generation.
-4. **Coin Handling**: Managing AptosCoin transfers using the `coin` module.
-5. **Error Handling**: Defining and using custom error codes for better error management.
-6. **View Functions**: Implementing `#[view]` functions for easy data retrieval without modifying state.
-7. **Timestamp Usage**: Using `timestamp::now_seconds()` for time-based operations.
+## Prerequisites
 
-This project showcases the power and flexibility of Move in creating complex, secure, and efficient smart contracts on the Aptos blockchain.
+- Node.js (v14 or later)
+- Yarn or npm
+- Aptos CLI (for contract deployment)
+- An Aptos wallet (e.g., Petra, Martian)
 
-<!-- # Lottery Psuedocode
+## Setup and Installation
 
-- Initialize lottery 
-    - define structure to store participants, prize, winner
-    - initialize lottery with a minimum ticket prize
+1. Clone the repository:
+   ```
+   git clone https://github.com/your-username/aptos-lottery.git
+   cd aptos-lottery
+   ```
 
-- Buy ticket
-    - users can by tickets by sending Aptos coins to the lottery contract
-    - add user's address to the participants list and increase the total prize
+2. Install dependencies:
+   ```
+   cd frontend
+   yarn install
+   ```
 
-- Draw winner
-    - ensure lottery has at least three participants
-    - use aptos on-chain randomness modulte to select a winner from the participants list
-    - transfer the total prize to the winner's address
+3. Set up environment variables:
+   Create a `.env.local` file in the `frontend` directory and add the following:
+   ```
+   NEXT_PUBLIC_APP_NETWORK=testnet
+   NEXT_PUBLIC_MODULE_ADDRESS=your_module_address
+   NEXT_PUBLIC_ADMIN_ADDRESS=your_admin_address
+   ```
 
-- End lottery
-    - mark lottery as ended -->
+4. Start the development server:
+   ```
+   yarn dev
+   ```
+
+5. Open [http://localhost:3000](http://localhost:3000) in your browser to see the application.
+
+## Smart Contract Deployment
+
+1. Navigate to the `move` directory.
+2. Update the `Move.toml` file with your account address.
+3. Compile and deploy the contract using Aptos CLI:
+   ```
+   aptos move compile
+   aptos move publish
+   ```
+
+## Usage
+
+1. Connect your Aptos wallet to the application.
+2. As an admin, create new lotteries with specified durations.
+3. Users can buy tickets for active lotteries.
+4. When a lottery ends, the admin can draw a winner.
+5. Winners are automatically credited with the prize amount.
+
+## Project Structure
+
+- `move/`: Contains the Move smart contract
+- `frontend/`: Next.js frontend application
+  - `src/components/`: React components
+  - `src/view-functions/`: Functions to interact with the smart contract
+  - `src/entry-functions/`: Functions to call smart contract entry points
+  - `src/constants/`: Configuration constants
+  - `src/utils/`: Utility functions
+
+## Contributing
+
+Contributions are welcome! Please feel free to submit a Pull Request.
+
+## License
+
+This project is licensed under the MIT License.
+
