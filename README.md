@@ -1,4 +1,4 @@
-# Aptos Lottery
+# Move Lottery
 
 As part of Encode's Aptos bootcamp, the team (Aashish and Akshar) worked on the project: Aptos Lottery. This project implements a decentralized lottery system on the Aptos blockchain using the Move programming language. The smart contract allows users to participate in a lottery by buying tickets with AptosCoin, and uses on-chain randomness to select a winner.
 
